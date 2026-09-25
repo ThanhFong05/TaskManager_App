@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, FlatList, ActivityIndicator } from 'react-native';
-import { FAB, Text, SegmentedButtons } from 'react-native-paper';
+import { FAB, Text, SegmentedButtons, useTheme } from 'react-native-paper';
 import { Task, TaskStatus } from '../types';
 import { subscribeToTasks, createTask, updateTask, deleteTask } from '../services/taskService';
 import TaskItem from '../components/TaskItem';
 import TaskFormModal from '../components/TaskFormModal';
 
 const HomeScreen = () => {
+  const theme = useTheme();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalVisible, setModalVisible] = useState(false);
@@ -65,10 +66,10 @@ const HomeScreen = () => {
   });
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text variant="headlineMedium" style={styles.title}>Task Manager</Text>
-        <Text variant="bodyMedium" style={styles.subtitle}>Organize your work effectively</Text>
+    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <View style={[styles.header, { backgroundColor: theme.colors.surface, borderBottomColor: theme.colors.surfaceVariant }]}>
+        <Text variant="headlineMedium" style={[styles.title, { color: theme.colors.primary }]}>Task Manager</Text>
+        <Text variant="bodyMedium" style={[styles.subtitle, { color: theme.colors.onSurfaceVariant }]}>Organize your work effectively</Text>
       </View>
 
       <View style={styles.filterContainer}>
@@ -87,7 +88,7 @@ const HomeScreen = () => {
 
       {loading ? (
         <View style={styles.center}>
-          <ActivityIndicator size="large" color="#6200ee" />
+          <ActivityIndicator size="large" color={theme.colors.primary} />
         </View>
       ) : (
         <FlatList
@@ -103,7 +104,7 @@ const HomeScreen = () => {
           contentContainerStyle={styles.listContent}
           ListEmptyComponent={
             <View style={styles.center}>
-              <Text variant="bodyLarge" style={styles.emptyText}>
+              <Text variant="bodyLarge" style={[styles.emptyText, { color: theme.colors.onSurfaceVariant }]}>
                 No tasks found. Create one!
               </Text>
             </View>
@@ -113,7 +114,8 @@ const HomeScreen = () => {
 
       <FAB
         icon="plus"
-        style={styles.fab}
+        style={[styles.fab, { backgroundColor: theme.colors.primary }]}
+        color={theme.colors.onPrimary}
         onPress={openCreateModal}
       />
 
@@ -130,20 +132,15 @@ const HomeScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
   },
   header: {
     padding: 16,
-    backgroundColor: '#fff',
     borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
   },
   title: {
     fontWeight: 'bold',
-    color: '#6200ee',
   },
   subtitle: {
-    color: '#666',
     marginTop: 4,
   },
   filterContainer: {
@@ -161,14 +158,12 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   emptyText: {
-    color: '#888',
   },
   fab: {
     position: 'absolute',
     margin: 16,
     right: 0,
     bottom: 0,
-    backgroundColor: '#6200ee',
   },
 });
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
-import { Portal, Modal, TextInput, Button, Text, SegmentedButtons } from 'react-native-paper';
+import { Portal, Modal, TextInput, Button, Text, SegmentedButtons, useTheme } from 'react-native-paper';
 import { Task, TaskStatus, TaskPriority } from '../types';
 
 interface TaskFormModalProps {
@@ -16,6 +16,7 @@ const TaskFormModal: React.FC<TaskFormModalProps> = ({
   onSubmit,
   initialData,
 }) => {
+  const theme = useTheme();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [status, setStatus] = useState<TaskStatus>('To Do');
@@ -62,9 +63,9 @@ const TaskFormModal: React.FC<TaskFormModalProps> = ({
 
   return (
     <Portal>
-      <Modal visible={visible} onDismiss={onDismiss} contentContainerStyle={styles.modalContainer}>
+      <Modal visible={visible} onDismiss={onDismiss} contentContainerStyle={[styles.modalContainer, { backgroundColor: theme.colors.surface }]}>
         <ScrollView keyboardShouldPersistTaps="handled">
-          <Text variant="headlineSmall" style={styles.header}>
+          <Text variant="headlineSmall" style={[styles.header, { color: theme.colors.onSurface }]}>
             {initialData ? 'Edit Task' : 'Create Task'}
           </Text>
 
@@ -79,7 +80,7 @@ const TaskFormModal: React.FC<TaskFormModalProps> = ({
             style={styles.input}
             error={!!error}
           />
-          {error ? <Text style={styles.errorText}>{error}</Text> : null}
+          {error ? <Text style={[styles.errorText, { color: theme.colors.error }]}>{error}</Text> : null}
 
           <TextInput
             label="Description (Optional)"
@@ -91,7 +92,7 @@ const TaskFormModal: React.FC<TaskFormModalProps> = ({
             style={styles.input}
           />
 
-          <Text variant="titleMedium" style={styles.label}>Status</Text>
+          <Text variant="titleMedium" style={[styles.label, { color: theme.colors.onSurface }]}>Status</Text>
           <SegmentedButtons
             value={status}
             onValueChange={(val) => setStatus(val as TaskStatus)}
@@ -103,7 +104,7 @@ const TaskFormModal: React.FC<TaskFormModalProps> = ({
             style={styles.segmented}
           />
 
-          <Text variant="titleMedium" style={styles.label}>Priority</Text>
+          <Text variant="titleMedium" style={[styles.label, { color: theme.colors.onSurface }]}>Priority</Text>
           <SegmentedButtons
             value={priority}
             onValueChange={(val) => setPriority(val as TaskPriority)}
@@ -131,7 +132,6 @@ const TaskFormModal: React.FC<TaskFormModalProps> = ({
 
 const styles = StyleSheet.create({
   modalContainer: {
-    backgroundColor: 'white',
     padding: 20,
     margin: 20,
     borderRadius: 8,
@@ -160,7 +160,6 @@ const styles = StyleSheet.create({
     marginLeft: 8,
   },
   errorText: {
-    color: 'red',
     fontSize: 12,
     marginTop: -8,
     marginBottom: 8,

@@ -2,12 +2,12 @@ import { initializeApp } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
 
 const firebaseConfig = {
-  apiKey: process.env.EXPO_PUBLIC_FIREBASE_API_KEY,
-  authDomain: process.env.EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.EXPO_PUBLIC_FIREBASE_PROJECT_ID,
-  storageBucket: process.env.EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.EXPO_PUBLIC_FIREBASE_APP_ID,
+  apiKey: "AIzaSyB8dEn5TyVwf_N-QOdOA_gj1NkJdRgnePY",
+  authDomain: "ass-mma.firebaseapp.com",
+  projectId: "ass-mma",
+  storageBucket: "ass-mma.firebasestorage.app",
+  messagingSenderId: "879031054104",
+  appId: "1:879031054104:web:0f1e8357529006eebeb86d"
 };
 
 // Initialize Firebase

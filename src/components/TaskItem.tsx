@@ -15,32 +15,32 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, onEdit, onDelete }) => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'Done':
-        return '#4CAF50';
+        return '#81C784'; // Lighter green for dark mode
       case 'In Progress':
-        return '#2196F3';
+        return '#64B5F6'; // Lighter blue
       case 'To Do':
       default:
-        return '#9E9E9E';
+        return '#E0E0E0'; // Light gray
     }
   };
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
       case 'High':
-        return '#F44336';
+        return '#E57373'; // Lighter red
       case 'Medium':
-        return '#FF9800';
+        return '#FFB74D'; // Lighter orange
       case 'Low':
       default:
-        return '#4CAF50';
+        return '#81C784';
     }
   };
 
   return (
-    <Card style={styles.card} mode="elevated">
+    <Card style={[styles.card, { backgroundColor: theme.colors.surface }]} mode="elevated">
       <Card.Content>
         <View style={styles.header}>
-          <Text variant="titleMedium" style={styles.title} numberOfLines={1}>
+          <Text variant="titleMedium" style={[styles.title, { color: theme.colors.onSurface }]} numberOfLines={1}>
             {task.title}
           </Text>
           <View style={styles.actions}>
@@ -62,7 +62,7 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, onEdit, onDelete }) => {
         </View>
         
         {task.description ? (
-          <Text variant="bodyMedium" style={styles.description} numberOfLines={2}>
+          <Text variant="bodyMedium" style={[styles.description, { color: theme.colors.onSurfaceVariant }]} numberOfLines={2}>
             {task.description}
           </Text>
         ) : null}
@@ -85,7 +85,7 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, onEdit, onDelete }) => {
           </Chip>
           
           {task.dueDate && (
-            <Text variant="bodySmall" style={styles.date}>
+            <Text variant="bodySmall" style={[styles.date, { color: theme.colors.onSurfaceVariant }]}>
               Due: {new Date(task.dueDate).toLocaleDateString()}
             </Text>
           )}
@@ -99,7 +99,6 @@ const styles = StyleSheet.create({
   card: {
     marginBottom: 12,
     marginHorizontal: 16,
-    backgroundColor: '#fff',
   },
   header: {
     flexDirection: 'row',
@@ -118,7 +117,6 @@ const styles = StyleSheet.create({
     margin: 0,
   },
   description: {
-    color: '#666',
     marginBottom: 12,
   },
   footer: {
@@ -131,7 +129,6 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   date: {
-    color: '#888',
     marginLeft: 'auto',
   },
 });

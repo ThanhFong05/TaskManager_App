@@ -1,12 +1,14 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import { Text } from 'react-native-paper';
+import { Text, useTheme } from 'react-native-paper';
 
 const TeamsScreen = () => {
+  const theme = useTheme();
+
   return (
-    <View style={styles.container}>
-      <Text variant="headlineMedium">Teams</Text>
-      <Text variant="bodyLarge" style={styles.subtitle}>Coming soon (Exam 2)</Text>
+    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <Text variant="headlineMedium" style={{ color: theme.colors.primary }}>Teams</Text>
+      <Text variant="bodyLarge" style={[styles.subtitle, { color: theme.colors.onSurfaceVariant }]}>Coming soon (Exam 2)</Text>
     </View>
   );
 };
@@ -16,11 +18,9 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#f5f5f5',
   },
   subtitle: {
     marginTop: 10,
-    color: '#666',
   },
 });
 
