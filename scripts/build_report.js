@@ -148,6 +148,113 @@ const doc = new Document({
           ],
         }),
 
+        // 1.2 DATABASE ARCHITECTURE & ERD
+        new Paragraph({
+          text: "1.2 Database Architecture & Entity Relationship Diagram (ERD)",
+          heading: HeadingLevel.HEADING_2,
+          spacing: { before: 180, after: 120 },
+        }),
+        new Paragraph({
+          spacing: { after: 120 },
+          children: [
+            new TextRun({
+              text: "The backend is architected on Cloud Firestore (NoSQL Document Store). The schema balances relational integrity with document denormalization to deliver instant queries without composite indexing bottlenecks:",
+            }),
+          ],
+        }),
+
+        // Database Schema Table
+        new Table({
+          width: { size: 100, type: WidthType.PERCENTAGE },
+          rows: [
+            new TableRow({
+              children: [
+                new TableCell({ shading: { fill: "FFEAD9" }, children: [new Paragraph({ children: [new TextRun({ text: "Collection", bold: true })] })] }),
+                new TableCell({ shading: { fill: "FFEAD9" }, children: [new Paragraph({ children: [new TextRun({ text: "Document ID", bold: true })] })] }),
+                new TableCell({ shading: { fill: "FFEAD9" }, children: [new Paragraph({ children: [new TextRun({ text: "Key Fields & Types", bold: true })] })] }),
+                new TableCell({ shading: { fill: "FFEAD9" }, children: [new Paragraph({ children: [new TextRun({ text: "Role & Description", bold: true })] })] }),
+              ],
+            }),
+            new TableRow({
+              children: [
+                new TableCell({ children: [new Paragraph({ text: "users", children: [new TextRun({ text: " (Root)", bold: true })] })] }),
+                new TableCell({ children: [new Paragraph({ text: "uid (Firebase Auth)" })] }),
+                new TableCell({ children: [new Paragraph({ text: "id: string\nname: string\nemail: string\navatarUrl: string | null\ncreatedAt: number" })] }),
+                new TableCell({ children: [new Paragraph({ text: "Stores user profiles linked 1:1 with Firebase Authentication accounts." })] }),
+              ],
+            }),
+            new TableRow({
+              children: [
+                new TableCell({ children: [new Paragraph({ text: "teams", children: [new TextRun({ text: " (Root)", bold: true })] })] }),
+                new TableCell({ children: [new Paragraph({ text: "Auto-generated" })] }),
+                new TableCell({ children: [new Paragraph({ text: "id: string\ncode: string (e.g. TF-XXXX)\nname: string\ndescription: string\nownerId: string (FK)\ncreatedAt: number" })] }),
+                new TableCell({ children: [new Paragraph({ text: "Defines team spaces with short 6-char joining codes and owner tracking." })] }),
+              ],
+            }),
+            new TableRow({
+              children: [
+                new TableCell({ children: [new Paragraph({ text: "teamMembers", children: [new TextRun({ text: " (Root)", bold: true })] })] }),
+                new TableCell({ children: [new Paragraph({ text: "{teamId}_{userId}" })] }),
+                new TableCell({ children: [new Paragraph({ text: "id: string\nteamId: string (FK)\nuserId: string (FK)\nuserName: string\nuserEmail: string\nrole: 'owner' | 'member'\njoinedAt: number" })] }),
+                new TableCell({ children: [new Paragraph({ text: "Resolves the Many-to-Many (N:N) relationship between Users and Teams." })] }),
+              ],
+            }),
+            new TableRow({
+              children: [
+                new TableCell({ children: [new Paragraph({ text: "tasks", children: [new TextRun({ text: " (Root)", bold: true })] })] }),
+                new TableCell({ children: [new Paragraph({ text: "Auto-generated" })] }),
+                new TableCell({ children: [new Paragraph({ text: "id: string\ntitle: string\ndescription: string\nstatus: TaskStatus\npriority: TaskPriority\ndueDate: string (ISO)\ncreatedAt: number\ncreatorId: string (FK)\nteamId: string | null (FK)\nteamName: string | null\nassigneeId: string | null (FK)\nassigneeName: string | null" })] }),
+                new TableCell({ children: [new Paragraph({ text: "Stores tasks. Supports personal tasks (creatorId) and team tasks with member assignee." })] }),
+              ],
+            }),
+            new TableRow({
+              children: [
+                new TableCell({ children: [new Paragraph({ text: "messages", children: [new TextRun({ text: " (Subcollection)\nteams/{teamId}/messages", bold: true, size: 18 })] })] }),
+                new TableCell({ children: [new Paragraph({ text: "Auto-generated" })] }),
+                new TableCell({ children: [new Paragraph({ text: "id: string\nsenderId: string (FK)\nsenderName: string\ntext: string\ncreatedAt: number" })] }),
+                new TableCell({ children: [new Paragraph({ text: "Per-team real-time chat messages ordered chronologically via onSnapshot." })] }),
+              ],
+            }),
+          ],
+        }),
+
+        new Paragraph({ text: "", spacing: { after: 120 } }),
+
+        // Relationship descriptions
+        new Paragraph({
+          text: "Entity Relationships (ERD Cardinality):",
+          heading: HeadingLevel.HEADING_3,
+          spacing: { before: 120, after: 80 },
+        }),
+        new Paragraph({
+          spacing: { after: 60 },
+          children: [
+            new TextRun({ text: "1. Users <-> Teams (Many-to-Many via teamMembers): ", bold: true }),
+            new TextRun({ text: "A user can create or join multiple teams. A team has many members with roles (Owner / Member)." }),
+          ],
+        }),
+        new Paragraph({
+          spacing: { after: 60 },
+          children: [
+            new TextRun({ text: "2. Teams -> Tasks (One-to-Many): ", bold: true }),
+            new TextRun({ text: "A team contains multiple tasks. Each team task belongs to exactly one team." }),
+          ],
+        }),
+        new Paragraph({
+          spacing: { after: 60 },
+          children: [
+            new TextRun({ text: "3. Users -> Tasks (One-to-Many for Assignee & Creator): ", bold: true }),
+            new TextRun({ text: "A team member can be assigned multiple tasks (assigneeId). A user owns their personal tasks (creatorId)." }),
+          ],
+        }),
+        new Paragraph({
+          spacing: { after: 180 },
+          children: [
+            new TextRun({ text: "4. Teams -> Messages (One-to-Many subcollection): ", bold: true }),
+            new TextRun({ text: "Each team manages an independent chat stream under teams/{teamId}/messages." }),
+          ],
+        }),
+
         // 2. FIREBASE EVIDENCE
         new Paragraph({
           text: "2. Firebase Console Evidence",
