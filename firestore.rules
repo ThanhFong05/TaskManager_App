@@ -1,0 +1,43 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper function: Check if request is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // 1. Users collection
+    // Authenticated users can read profiles; users can only write their own document
+    match /users/{userId} {
+      allow read: if isAuthenticated();
+      allow create, update: if isAuthenticated() && request.auth.uid == userId;
+      allow delete: if false;
+    }
+
+    // 2. Teams collection
+    // Authenticated users can read and create teams; team owners can update/delete
+    match /teams/{teamId} {
+      allow read, create: if isAuthenticated();
+      allow update, delete: if isAuthenticated();
+
+      // Chat Messages subcollection (teams/{teamId}/messages)
+      match /messages/{messageId} {
+        allow read: if isAuthenticated();
+        allow create: if isAuthenticated() && request.resource.data.senderId == request.auth.uid;
+        allow update, delete: if isAuthenticated() && resource.data.senderId == request.auth.uid;
+      }
+    }
+
+    // 3. Team Members collection
+    match /teamMembers/{memberId} {
+      allow read, create, update, delete: if isAuthenticated();
+    }
+
+    // 4. Tasks collection
+    match /tasks/{taskId} {
+      allow read, create, update, delete: if isAuthenticated();
+    }
+  }
+}

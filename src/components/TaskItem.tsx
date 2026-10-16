@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, StyleSheet, TouchableOpacity } from 'react-native';
-import { Card, Text, IconButton, Chip, useTheme } from 'react-native-paper';
+import { View, StyleSheet } from 'react-native';
+import { Card, Text, IconButton, Chip, useTheme, Surface } from 'react-native-paper';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Task } from '../types';
 
 interface TaskItemProps {
@@ -12,86 +13,116 @@ interface TaskItemProps {
 const TaskItem: React.FC<TaskItemProps> = ({ task, onEdit, onDelete }) => {
   const theme = useTheme();
 
-  const getStatusColor = (status: string) => {
+  // Status colors suited for warm orange & cream beige theme
+  const getStatusStyle = (status: string) => {
     switch (status) {
       case 'Done':
-        return '#81C784'; // Lighter green for dark mode
+        return { text: '#1E6F38', bg: '#EAF6ED' }; // Sage green
       case 'In Progress':
-        return '#64B5F6'; // Lighter blue
+        return { text: '#C25E00', bg: '#FFF1E0' }; // Warm amber orange
       case 'To Do':
       default:
-        return '#E0E0E0'; // Light gray
+        return { text: '#6D5D52', bg: '#F1E9DF' }; // Warm beige slate
     }
   };
 
-  const getPriorityColor = (priority: string) => {
+  // Priority colors suited for warm theme
+  const getPriorityStyle = (priority: string) => {
     switch (priority) {
       case 'High':
-        return '#E57373'; // Lighter red
+        return { text: '#C5221F', bg: '#FDECEB' }; // Coral Red
       case 'Medium':
-        return '#FFB74D'; // Lighter orange
+        return { text: '#D96500', bg: '#FFF0DE' }; // Orange
       case 'Low':
       default:
-        return '#81C784';
+        return { text: '#28795A', bg: '#E7F5EE' }; // Soft green
     }
   };
 
-  return (
-    <Card style={[styles.card, { backgroundColor: theme.colors.surface }]} mode="elevated">
-      <Card.Content>
-        <View style={styles.header}>
-          <Text variant="titleMedium" style={[styles.title, { color: theme.colors.onSurface }]} numberOfLines={1}>
-            {task.title}
-          </Text>
-          <View style={styles.actions}>
-            <IconButton
-              icon="pencil"
-              size={20}
-              iconColor={theme.colors.primary}
-              onPress={() => onEdit(task)}
-              style={styles.iconButton}
-            />
-            <IconButton
-              icon="delete"
-              size={20}
-              iconColor={theme.colors.error}
-              onPress={() => onDelete(task.id)}
-              style={styles.iconButton}
-            />
-          </View>
-        </View>
-        
-        {task.description ? (
-          <Text variant="bodyMedium" style={[styles.description, { color: theme.colors.onSurfaceVariant }]} numberOfLines={2}>
-            {task.description}
-          </Text>
-        ) : null}
+  const statusStyle = getStatusStyle(task.status);
+  const priorityStyle = getPriorityStyle(task.priority);
 
-        <View style={styles.footer}>
-          <Chip
-            style={[styles.chip, { backgroundColor: getStatusColor(task.status) + '20' }]}
-            textStyle={{ color: getStatusColor(task.status) }}
-            compact
-          >
-            {task.status}
-          </Chip>
-          
-          <Chip
-            style={[styles.chip, { backgroundColor: getPriorityColor(task.priority) + '20' }]}
-            textStyle={{ color: getPriorityColor(task.priority) }}
-            compact
-          >
-            {task.priority}
-          </Chip>
-          
-          {task.dueDate && (
-            <Text variant="bodySmall" style={[styles.date, { color: theme.colors.onSurfaceVariant }]}>
-              Due: {new Date(task.dueDate).toLocaleDateString()}
+  return (
+    <Surface style={[styles.card, { backgroundColor: theme.colors.surface }]} elevation={2}>
+      {/* Top bar with Team / Personal Badge and Action Buttons */}
+      <View style={styles.topRow}>
+        {task.teamName ? (
+          <View style={[styles.teamBadge, { backgroundColor: theme.colors.primaryContainer }]}>
+            <MaterialCommunityIcons name="account-group" size={14} color={theme.colors.primary} />
+            <Text variant="labelSmall" style={[styles.teamText, { color: theme.colors.primary }]}>
+              {task.teamName}
             </Text>
-          )}
+          </View>
+        ) : (
+          <View style={[styles.teamBadge, { backgroundColor: theme.colors.surfaceVariant }]}>
+            <MaterialCommunityIcons name="account" size={14} color={theme.colors.onSurfaceVariant} />
+            <Text variant="labelSmall" style={[styles.teamText, { color: theme.colors.onSurfaceVariant }]}>
+              Personal
+            </Text>
+          </View>
+        )}
+
+        <View style={styles.actions}>
+          <IconButton
+            icon="pencil-outline"
+            size={18}
+            iconColor={theme.colors.primary}
+            onPress={() => onEdit(task)}
+            style={styles.iconButton}
+          />
+          <IconButton
+            icon="delete-outline"
+            size={18}
+            iconColor={theme.colors.error}
+            onPress={() => onDelete(task.id)}
+            style={styles.iconButton}
+          />
         </View>
-      </Card.Content>
-    </Card>
+      </View>
+
+      {/* Task Title */}
+      <Text variant="titleMedium" style={[styles.title, { color: theme.colors.onSurface }]} numberOfLines={2}>
+        {task.title}
+      </Text>
+
+      {/* Task Description */}
+      {task.description ? (
+        <Text variant="bodyMedium" style={[styles.description, { color: theme.colors.onSurfaceVariant }]} numberOfLines={2}>
+          {task.description}
+        </Text>
+      ) : null}
+
+      {/* Assignee Badge */}
+      {task.assigneeName ? (
+        <View style={[styles.assigneeContainer, { backgroundColor: theme.colors.surfaceVariant }]}>
+          <MaterialCommunityIcons name="account-circle" size={16} color={theme.colors.primary} />
+          <Text variant="labelMedium" style={{ color: theme.colors.onSurfaceVariant, marginLeft: 6 }}>
+            Assignee: <Text style={{ color: theme.colors.onSurface, fontWeight: 'bold' }}>{task.assigneeName}</Text>
+          </Text>
+        </View>
+      ) : null}
+
+      {/* Footer Chips */}
+      <View style={styles.footer}>
+        <View style={[styles.customChip, { backgroundColor: statusStyle.bg }]}>
+          <Text variant="labelSmall" style={[styles.chipText, { color: statusStyle.text }]}>
+            {task.status}
+          </Text>
+        </View>
+
+        <View style={[styles.customChip, { backgroundColor: priorityStyle.bg }]}>
+          <Text variant="labelSmall" style={[styles.chipText, { color: priorityStyle.text }]}>
+            {task.priority}
+          </Text>
+        </View>
+
+        {task.dueDate && (
+          <Text variant="bodySmall" style={[styles.date, { color: theme.colors.onSurfaceVariant }]}>
+            Due: {new Date(task.dueDate).toLocaleDateString()}
+          </Text>
+        )}
+      </View>
+    </Surface>
   );
 };
 
@@ -99,37 +130,71 @@ const styles = StyleSheet.create({
   card: {
     marginBottom: 12,
     marginHorizontal: 16,
+    borderRadius: 16,
+    padding: 16,
   },
-  header: {
+  topRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 8,
   },
-  title: {
-    flex: 1,
+  teamBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 8,
+    gap: 4,
+  },
+  teamText: {
     fontWeight: 'bold',
+  },
+  title: {
+    fontWeight: 'bold',
+    fontSize: 16,
+    marginBottom: 6,
   },
   actions: {
     flexDirection: 'row',
   },
   iconButton: {
     margin: 0,
+    width: 32,
+    height: 32,
   },
   description: {
+    marginBottom: 10,
+    lineHeight: 19,
+  },
+  assigneeContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 4,
+    paddingHorizontal: 10,
+    borderRadius: 8,
     marginBottom: 12,
+    alignSelf: 'flex-start',
   },
   footer: {
     flexDirection: 'row',
     alignItems: 'center',
     flexWrap: 'wrap',
     gap: 8,
+    marginTop: 2,
   },
-  chip: {
-    borderRadius: 4,
+  customChip: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 8,
+  },
+  chipText: {
+    fontWeight: 'bold',
+    fontSize: 11,
   },
   date: {
     marginLeft: 'auto',
+    fontSize: 12,
   },
 });
 

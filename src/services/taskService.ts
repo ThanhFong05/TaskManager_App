@@ -13,30 +13,40 @@ import { Task } from '../types';
 
 const TASKS_COLLECTION = 'tasks';
 
-// 1. Subscribe to Tasks (Real-time updates)
+// 1. Subscribe to all tasks (filtered by user's teams in memory)
 export const subscribeToTasks = (callback: (tasks: Task[]) => void) => {
   const q = query(collection(db, TASKS_COLLECTION), orderBy('createdAt', 'desc'));
 
-  return onSnapshot(q, (snapshot) => {
-    const tasks: Task[] = snapshot.docs.map((docSnap) => {
-      const data = docSnap.data();
-      return {
-        id: docSnap.id,
-        title: data.title,
-        description: data.description,
-        status: data.status,
-        priority: data.priority,
-        dueDate: data.dueDate,
-        createdAt: data.createdAt,
-        teamId: data.teamId,
-        assigneeId: data.assigneeId,
-      } as Task;
-    });
-    callback(tasks);
-  });
+  return onSnapshot(
+    q,
+    (snapshot) => {
+      const tasks: Task[] = snapshot.docs.map((docSnap) => {
+        const data = docSnap.data();
+        return {
+          id: docSnap.id,
+          title: data.title,
+          description: data.description,
+          status: data.status,
+          priority: data.priority,
+          dueDate: data.dueDate,
+          createdAt: data.createdAt,
+          creatorId: data.creatorId || null,
+          teamId: data.teamId || null,
+          teamName: data.teamName || null,
+          assigneeId: data.assigneeId || null,
+          assigneeName: data.assigneeName || null,
+        } as Task;
+      });
+      callback(tasks);
+    },
+    (error) => {
+      console.error('Error subscribing to tasks:', error);
+      callback([]);
+    }
+  );
 };
 
-// 2. Create Task
+// 2. Create Task with teamId, teamName, assigneeId, assigneeName
 export const createTask = async (taskData: Omit<Task, 'id' | 'createdAt'>) => {
   try {
     await addDoc(collection(db, TASKS_COLLECTION), {

@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "task-manager-app",
-    "slug": "task-manager-app",
+    "name": "TaFo",
+    "slug": "tafo",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
